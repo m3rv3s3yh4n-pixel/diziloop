@@ -5,22 +5,93 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>DiziLoop • Admin</title>
   <style>
-    body{font-family:system-ui,Arial;background:#070a12;color:#eaf2ff;padding:16px}
-    .item{border:1px solid rgba(0,229,255,.2);border-radius:12px;padding:12px;margin:10px 0;background:#0b1022}
-    a{color:#00e5ff}
-    button{padding:8px 12px;border-radius:10px;border:none;margin-right:8px;font-weight:800}
-    .ok{background:#22c55e;color:#06260f}
-    .no{background:#ef4444;color:#fff}
-    .top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-    .pill{border:1px solid rgba(0,229,255,.2);padding:6px 10px;border-radius:999px;background:#0b1022;color:rgba(234,242,255,.75);font-size:12px}
+    body{font-family:system-ui,Arial;background:#0b1022;color:#eaf2ff;padding:16px}
+    .card{border:1px solid #1a2a4a;background:#0f1630;border-radius:12px;padding:12px;margin:10px 0}
+    button{padding:10px 12px;border-radius:10px;border:0;background:#22c55e;color:#06260f;font-weight:900}
+    .danger{background:#ef4444;color:#fff;margin-left:8px}
+    .muted{opacity:.8;font-size:12px}
+    a{color:#7CFFB2}
   </style>
 </head>
 <body>
-  <h2>Onay Paneli</h2>
-  <div class="top">
-    <div class="pill">Durum: pending → approved/rejected</div>
-    <div class="pill">Koleksiyon: submissions</div>
-  </div>
+  <h2>Admin Panel • Onay Kuyruğu</h2>
+  <div class="muted" id="msg">Yükleniyor…</div>
+  <div id="list"></div>
 
-  <h3>Onay Bekleyenler</h3>
-  <div id="list">Yükleniyor…</
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs, doc, updateDoc, query, where
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaPTs9mx419qrHrFIlK_jCpT8FdiQfUGE",
+      authDomain: "diziloop.firebaseapp.com",
+      projectId: "diziloop",
+      messagingSenderId: "71716151612",
+      appId: "1:71716151612:web:f6abcbd6824292e5817e39"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const list = document.getElementById("list");
+    const msg = document.getElementById("msg");
+
+    async function loadPending(){
+      list.innerHTML = "";
+      msg.textContent = "Bekleyen içerikler aranıyor...";
+
+      try{
+        const q = query(collection(db, "submissions"), where("status","==","pending"));
+        const snap = await getDocs(q);
+
+        if(snap.empty){
+          msg.textContent = "Bekleyen içerik yok.";
+          return;
+        }
+
+        msg.textContent = `Bekleyen: ${snap.size}`;
+
+        snap.forEach(d=>{
+          const data = d.data();
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <div><b>${data.title || "(başlıksız)"}</b></div>
+            <div class="muted" style="margin:6px 0">
+              Video: <a href="${data.videoUrl}" target="_blank" rel="noopener">Aç</a><br>
+              Kapak: <a href="${data.coverUrl}" target="_blank" rel="noopener">Aç</a>
+            </div>
+            <button class="ok" data-id="${d.id}">Onayla</button>
+            <button class="danger" data-id="${d.id}">Reddet</button>
+          `;
+
+          div.querySelector(".ok").onclick = async (e)=>{
+            const id = e.target.getAttribute("data-id");
+            e.target.disabled = true;
+            e.target.textContent = "Onaylanıyor...";
+            await updateDoc(doc(db, "submissions", id), { status: "approved" });
+            await loadPending();
+          };
+
+          div.querySelector(".danger").onclick = async (e)=>{
+            const id = e.target.getAttribute("data-id");
+            e.target.disabled = true;
+            e.target.textContent = "Reddediliyor...";
+            await updateDoc(doc(db, "submissions", id), { status: "rejected" });
+            await loadPending();
+          };
+
+          list.appendChild(div);
+        });
+
+      }catch(err){
+        msg.textContent = "Hata: " + (err?.message || err);
+      }
+    }
+
+    loadPending();
+  </script>
+</body>
+</html>
