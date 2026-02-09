@@ -50,11 +50,32 @@
     .btnPrimary{background:linear-gradient(135deg,var(--green),#7CFFB2);color:#06260f}
     .btnGhost{border:1px solid var(--line);background:rgba(11,16,34,.6)}
     .heroRight{padding:16px}
-    .mock{
-      height:360px;border-radius:14px;border:1px dashed var(--line);
-      display:grid;place-items:center;color:var(--muted);
-      background:radial-gradient(600px 300px at 50% 15%, rgba(0,229,255,.10), transparent 60%);
+
+    /* Poster */
+    .poster{
+      width:100%; height:360px; border-radius:14px; border:1px solid var(--line);
+      position:relative; overflow:hidden;
+      background:
+        radial-gradient(420px 220px at 30% 25%, rgba(0,229,255,.22), transparent 60%),
+        radial-gradient(420px 220px at 70% 65%, rgba(34,197,94,.16), transparent 60%),
+        linear-gradient(180deg, rgba(11,16,34,.95), rgba(10,14,27,.85));
     }
+    .poster:after{
+      content:""; position:absolute; inset:-40% -20%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      transform:rotate(18deg); animation:shine2 6.5s linear infinite; opacity:.55;
+    }
+    @keyframes shine2{
+      0%{transform:translateX(-55%) rotate(18deg)}
+      100%{transform:translateX(140%) rotate(18deg)}
+    }
+    .posterInner{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:18px; gap:10px}
+    .posterTitle{font-size:18px; font-weight:900}
+    .posterSub{color:var(--muted); font-size:13px; line-height:1.45}
+    .badgeRow{display:flex; gap:8px; flex-wrap:wrap}
+    .badge{font-size:12px; font-weight:800; padding:7px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(7,10,18,.35)}
+    .badgeCyan{box-shadow:0 0 0 2px rgba(0,229,255,.10) inset}
+
     .section{margin-top:18px}
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     @media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}
@@ -82,8 +103,19 @@
           <a class="btn btnGhost" href="#grid">Dizileri Gör</a>
         </div>
       </div>
+
       <div class="card heroRight">
-        <div class="mock">Telefon önizlemesi (yakında)</div>
+        <div class="poster" aria-label="DiziLoop kapak görseli">
+          <div class="posterInner">
+            <div class="badgeRow">
+              <div class="badge badgeCyan">Neon Cyan • Siyah</div>
+              <div class="badge">Kaydır & İzle</div>
+              <div class="badge">Reklam → Jeton</div>
+            </div>
+            <div class="posterTitle">DiziLoop</div>
+            <div class="posterSub">Dikey diziler için hızlı, modern bir vitrin. Takılma yok, kaydır ve devam et.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -113,24 +145,8 @@
         </div>
       </div>
     </div>
-    <!-- Poster (Telefon önizlemesi yerine) -->
-<div class="card heroRight" style="margin-top:16px">
-  <div class="poster" aria-label="DiziLoop kapak görseli">
-    <div class="posterInner">
-      <div class="badgeRow">
-        <div class="badge badgeCyan">Neon Cyan • Siyah</div>
-        <div class="badge">Kaydır & İzle</div>
-        <div class="badge">Reklam → Jeton</div>
-      </div>
-      <div class="posterTitle">DiziLoop</div>
-      <div class="posterSub">
-        Dikey diziler için hızlı, modern bir vitrin. Takılma yok, kaydır ve devam et.
-      </div>
-    </div>
-  </div>
-</div>
 
-    <div class="foot">v1.0 • DiziLoop • GitHub Pages</div>
+    <div class="foot">v1.0 • DiziLoop • GitHub Pages<br>Geliştirici: Merve Mina Seyhan • DiziLoop Ekosistemi</div>
   </div>
 </body>
 </html>
