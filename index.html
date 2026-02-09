@@ -149,4 +149,31 @@
     <div class="foot">v1.0 • DiziLoop • GitHub Pages<br>Geliştirici: Merve Mina Seyhan • DiziLoop Ekosistemi</div>
   </div>
 </body>
+  <script type="module">
+  import "./firebase.js";
+  const { collection, getDocs, query, where } = window._fs;
+
+  const gridWrap = document.getElementById("grid");
+  if(gridWrap){
+    const grid = gridWrap.querySelector(".grid");
+    if(grid){
+      const q = query(collection(window._db, "submissions"), where("status","==","approved"));
+      const snap = await getDocs(q);
+
+      snap.forEach(d=>{
+        const data = d.data();
+        const card = document.createElement("div");
+        card.className = "tile";
+        card.innerHTML = `
+          <div class="ph" style="background-image:url('${data.coverUrl}');background-size:cover;background-position:center;height:120px"></div>
+          <div class="tileBody">
+            <strong>${data.title}</strong>
+            <div class="tag"><a href="${data.videoUrl}" target="_blank" rel="noopener">İzle</a></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+  }
+  </script>
 </html>
